@@ -1,0 +1,125 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "SQL Script"
+      parameters:
+        componentName: "Start"
+    SQL Script:
+      type: "sql-executor"
+      transitions:
+        success:
+        - "File Iterator"
+      parameters:
+        componentName: "SQL Script"
+        scriptLocation: "Component"
+        declareSqlVariables: "Include selected"
+        variablesToInclude:
+        sqlScript: "CREATE or replace TABLE TRANSACTIONS\r\n(\r\ntrans_id INT,\t\r\
+          \naccount_id\tINT,\r\nDate\tDATE,\r\nType\tVARCHAR(30),\r\noperation\tVARCHAR(40),\r\
+          \namount\tINT,\r\nbalance\tFLOAT,\r\nPurpose\tVARCHAR(40),\r\nbank\tVARCHAR(45)\r\
+          \n);"
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+    S3 Load:
+      type: "s3-load"
+      parameters:
+        componentName: "S3 Load"
+        stage: "[Custom]"
+        authentication: "Credentials"
+        s3ObjectPrefix: "s3://analyticswithsagar/transaction/"
+        pattern: "${file_name}"
+        encryption: "None"
+        warehouse: "[Environment Default]"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "TRANSACTIONS"
+        loadColumns:
+        - "TRANS_ID"
+        - "ACCOUNT_ID"
+        - "DATE"
+        - "TYPE"
+        - "OPERATION"
+        - "AMOUNT"
+        - "BALANCE"
+        - "PURPOSE"
+        - "BANK"
+        format: "[Custom]"
+        fileType: "CSV"
+        compression: "AUTO"
+        recordDelimiter: ""
+        fieldDelimiter: ","
+        skipHeader: "1"
+        skipBlankLines: "True"
+        dateFormat:
+        timeFormat:
+        timestampFormat:
+        escape:
+        escapeUnenclosedField:
+        trimSpace: "True"
+        fieldOptionallyEnclosed:
+        nullIf:
+        errorOnColumnCountMismatch: "False"
+        emptyFieldAsNull: "True"
+        replaceInvalidCharacters: "False"
+        encodingType:
+        onError: "Abort Statement"
+        sizeLimitB:
+        purgeFiles: "False"
+        truncateColumns: "False"
+        forceLoad: "False"
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+    File Iterator:
+      type: "file-iterator"
+      iterationTarget: "S3 Load"
+      parameters:
+        componentName: "File Iterator"
+        inputDataType: "S3"
+        inputDataUrl1: "s3://analyticswithsagar/transaction/"
+        maxIterations: ""
+        filterRegex: ".*\\.csv"
+        concurrency: "Sequential"
+        variables:
+        - - "file_name"
+          - "Filename"
+        breakOnFailure: "No"
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+  variables:
+    file_name:
+      metadata:
+        type: "TEXT"
+        description: "File name for iteration "
+        scope: "SHARED"
+        visibility: "PUBLIC"
+      defaultValue: "trnx_16.csv"
+design:
+  components:
+    Start:
+      position:
+        x: 0
+        "y": 0
+      tempMetlId: 1
+    SQL Script:
+      position:
+        x: 160
+        "y": 0
+      tempMetlId: 2
+    S3 Load:
+      position:
+        x: 320
+        "y": 0
+      tempMetlId: 3
+    File Iterator:
+      position:
+        x: 320
+        "y": -20
+      tempMetlId: 4
