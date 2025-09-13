@@ -1,0 +1,146 @@
+type: "transformation"
+version: "1.0"
+pipeline:
+  components:
+    EMPLOYEE:
+      type: "table-input"
+      parameters:
+        componentName: "EMPLOYEE"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "EMPLOYEE"
+        columnNames:
+        - "EMPLOYEEID"
+        - "EMPLOYEENAME"
+        - "GENDER"
+        - "STATECODE"
+        - "SALARY"
+        timeOffset:
+    Map Values:
+      type: "map-values"
+      sources:
+      - "EMPLOYEE"
+      parameters:
+        componentName: "Map Values"
+        valueMap:
+        - - "SALARY"
+          - "Is"
+          - "Less than"
+          - "10000"
+          - "Trainee"
+        - - "SALARY"
+          - "Is"
+          - "Less than"
+          - "30000"
+          - "Consultant"
+        - - "SALARY"
+          - "Is"
+          - "Less than"
+          - "40000"
+          - "Manager"
+        - - "SALARY"
+          - "Is"
+          - "Less than"
+          - "80000"
+          - "Lead"
+        columnName: "Employee_Category"
+        other: "Lead Consultant"
+    Salary Bucket:
+      type: "aggregate"
+      sources:
+      - "Map Values"
+      parameters:
+        componentName: "Salary Bucket"
+        groupings:
+        - "Employee_Category"
+        aggregations:
+        - - "EMPLOYEEID"
+          - "Count Distinct"
+        groupingType: "Group By"
+    Rename:
+      type: "rename"
+      sources:
+      - "Salary Bucket"
+      parameters:
+        componentName: "Rename"
+        columnMapping:
+        - - "count_distinct_EMPLOYEEID"
+          - "Total_Empl_Count"
+        - - "Employee_Category"
+          - "Category"
+        includeInputColumns: "No"
+    Rewrite Table:
+      type: "rewrite-table"
+      sources:
+      - "Rename"
+      parameters:
+        componentName: "Rewrite Table"
+        warehouse: "[Environment Default]"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "Employee_New"
+        orderBy:
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+    Total_Salary_By_Gender:
+      type: "aggregate"
+      sources:
+      - "EMPLOYEE"
+      parameters:
+        componentName: "Total_Salary_By_Gender"
+        groupings:
+        - "GENDER"
+        aggregations:
+        - - "SALARY"
+          - "Sum"
+        groupingType: "Group By"
+    Calculator:
+      type: "calculator"
+      sources:
+      - "Salary Bucket"
+      parameters:
+        componentName: "Calculator"
+        includeInputColumns: "No"
+        calculations:
+        - - "\"Employee_Category\""
+          - "employee_category"
+        - - "\"count_distinct_EMPLOYEEID\""
+          - "count"
+design:
+  components:
+    EMPLOYEE:
+      position:
+        x: -190
+        "y": 0
+      tempMetlId: 1
+    Map Values:
+      position:
+        x: -30
+        "y": 0
+      tempMetlId: 2
+    Salary Bucket:
+      position:
+        x: 120
+        "y": 0
+      tempMetlId: 3
+    Rename:
+      position:
+        x: 280
+        "y": 0
+      tempMetlId: 4
+    Rewrite Table:
+      position:
+        x: 440
+        "y": 0
+      tempMetlId: 5
+    Total_Salary_By_Gender:
+      position:
+        x: 40
+        "y": 120
+      tempMetlId: 7
+    Calculator:
+      position:
+        x: 280
+        "y": -120
+      tempMetlId: 8
