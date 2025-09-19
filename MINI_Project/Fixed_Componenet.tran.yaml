@@ -1,0 +1,43 @@
+type: "transformation"
+version: "1.0"
+pipeline:
+  components:
+    Generate Worksheet Name:
+      type: "fixed-flow"
+      parameters:
+        componentName: "Generate Worksheet Name"
+        columns:
+        - - "Worksheet_Name"
+          - "VARCHAR"
+          - "30"
+          - ""
+        values:
+        - - "ITEMS"
+        - - "ORDERS"
+        - - "ITEMS_ORDERS"
+    Rewrite Table:
+      type: "rewrite-table"
+      sources:
+      - "Generate Worksheet Name"
+      parameters:
+        componentName: "Rewrite Table"
+        warehouse: "[Environment Default]"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "GW_Sheet_Name"
+        orderBy:
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+design:
+  components:
+    Generate Worksheet Name:
+      position:
+        x: -130
+        "y": -60
+      tempMetlId: 1
+    Rewrite Table:
+      position:
+        x: 30
+        "y": -60
+      tempMetlId: 2

@@ -1,0 +1,56 @@
+type: "orchestration"
+version: "1.0"
+pipeline:
+  components:
+    Start:
+      type: "start"
+      transitions:
+        unconditional:
+        - "Excel Query"
+      parameters:
+        componentName: "Start"
+    Excel Query:
+      type: "excel-query"
+      parameters:
+        componentName: "Excel Query"
+        basicAdvancedMode: "Basic"
+        storageType: "Amazon S3 Storage"
+        storageUrl: "s3://analyticswithsagar/ExcelQuerry/store_lite.xlsx"
+        containsHeaderRow: "Yes"
+        cellRange:
+        connectionOptions:
+        dataSource: "CUSTOMERS"
+        dataSelection:
+        - "FIRST_NAME"
+        - "LAST_NAME"
+        - "LAST_UPDATED"
+        - "RID"
+        - "RowId"
+        dataSourceFilter:
+        combineFilters: "And"
+        limit:
+        type: "Standard"
+        primaryKeys:
+        warehouse: "[Environment Default]"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "AWS_Excel_Querry"
+        stage: "[Custom]"
+        stagePlatform: "Snowflake Managed"
+        loadOptions:
+        autoDebug: "Off"
+      postProcessing:
+        updateOutputMessage:
+        updateScalarVariables:
+design:
+  components:
+    Start:
+      position:
+        x: 0
+        "y": 0
+      tempMetlId: 1
+    Excel Query:
+      position:
+        x: 160
+        "y": 0
+      tempMetlId: 2

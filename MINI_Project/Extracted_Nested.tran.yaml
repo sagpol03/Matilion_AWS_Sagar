@@ -1,0 +1,73 @@
+type: "transformation"
+version: "1.0"
+pipeline:
+  components:
+    customer_json:
+      type: "table-input"
+      parameters:
+        componentName: "customer_json"
+        database: "[Environment Default]"
+        schema: "[Environment Default]"
+        targetTable: "customer_json"
+        columnNames:
+        - "data"
+        timeOffset:
+    Extract Nested Data:
+      type: "extract-nested-data-sf"
+      sources:
+      - "customer_json"
+      parameters:
+        componentName: "Extract Nested Data"
+        includeInputColumns: "No"
+        columns:
+        - name: "data"
+          datatype: "VARIANT"
+          size: "0"
+          decimalPlaces: "0"
+          columnName: "data"
+          aliasName: "data"
+          isArray: "true"
+          include: "false"
+          childElements:
+          - name: "data-element"
+            datatype: "VARIANT"
+            size: "0"
+            decimalPlaces: "0"
+            columnName: "data"
+            aliasName: "data-element"
+            isArray: "false"
+            include: "false"
+            childElements:
+            - name: "customer_rid"
+              datatype: "NUMBER"
+              size: "0"
+              decimalPlaces: "0"
+              columnName: "data"
+              aliasName: "customer_rid"
+              isArray: "false"
+              include: "true"
+            - name: "account_name"
+              datatype: "VARCHAR"
+              size: "0"
+              decimalPlaces: "0"
+              columnName: "data"
+              aliasName: "account_name"
+              isArray: "false"
+              include: "true"
+        outerJoin: "No"
+        inputAlias: "i"
+        arrayPrefix: "f"
+        castingMethod: "Fail on invalid data"
+        caseColumnAliasNames: "No"
+design:
+  components:
+    customer_json:
+      position:
+        x: -200
+        "y": 0
+      tempMetlId: 1
+    Extract Nested Data:
+      position:
+        x: -40
+        "y": 0
+      tempMetlId: 2
