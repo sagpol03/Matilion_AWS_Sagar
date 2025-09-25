@@ -256,12 +256,12 @@ design:
   components:
     GW_CCUSTOMER_ACCOUNT:
       position:
-        x: -420
+        x: -410
         "y": -130
       tempMetlId: 1
     ACC:
       position:
-        x: -280
+        x: -260
         "y": -130
       tempMetlId: 2
     GW_ORDERS:
@@ -301,16 +301,16 @@ design:
       tempMetlId: 9
     Calculator:
       position:
-        x: 80
+        x: 40
         "y": 10
       tempMetlId: 10
     Aggregate:
       position:
-        x: 180
+        x: 120
         "y": 10
       tempMetlId: 11
     Rewrite Table:
       position:
-        x: 290
+        x: 200
         "y": 10
       tempMetlId: 12

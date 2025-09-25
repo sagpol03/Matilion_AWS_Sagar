@@ -13,22 +13,12 @@ pipeline:
       type: "excel-query"
       parameters:
         componentName: "Excel Query"
-        basicAdvancedMode: "Basic"
+        basicAdvancedMode: "Advanced"
         storageType: "Amazon S3 Storage"
         storageUrl: "s3://analyticswithsagar/ExcelQuerry/store_lite.xlsx"
         containsHeaderRow: "Yes"
-        cellRange:
         connectionOptions:
-        dataSource: "CUSTOMERS"
-        dataSelection:
-        - "FIRST_NAME"
-        - "LAST_NAME"
-        - "LAST_UPDATED"
-        - "RID"
-        - "RowId"
-        dataSourceFilter:
-        combineFilters: "And"
-        limit:
+        sqlQuery:
         type: "Standard"
         primaryKeys:
         warehouse: "[Environment Default]"
